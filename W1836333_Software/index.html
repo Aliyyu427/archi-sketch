@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Archi-Sketch</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="../logo.png" alt="Archi-Sketch logo" class="logo-img">
+      <div class="brand-text">
+        <div class="title">Archi-Sketch</div>
+        <div class="subtitle">Generate and compare early-stage building designs with instant cost and performance feedback</div>
+      </div>
+    </div>
+  
+    <div class="meta">
+      <label class="theme-switch" aria-label="Toggle dark mode">
+        <input type="checkbox" id="themeToggle">
+        <span class="theme-slider"></span>
+      </label>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <h2>Design Inputs</h2>
+
+      <div class="grid2">
+        <div class="field">
+          <label for="buildingType">Building type</label>
+          <select id="buildingType">
+            <option value="rear_extension">Residential — Rear Extension</option>
+            <option value="loft_conversion">Residential — Loft Conversion</option>
+            <option value="new_build_house">Residential — New Build House</option>
+            <option value="new_build_apartments">Residential — New Build Apartments</option>
+            <option value="office">Commercial — Office</option>
+            <option value="retail">Commercial — Retail</option>
+            <option value="mixed_use">Mixed Use</option>
+          </select>
+          <p class="hint">Changes default assumptions (cost rates, fees, allowances).</p>
+        </div>
+
+        <div class="field">
+          <label for="location">Location factor</label>
+          <select id="location">
+            <option value="1.00">UK Average (1.00)</option>
+            <option value="1.15" selected>London (1.15)</option>
+            <option value="0.92">Lower-cost region (0.92)</option>
+          </select>
+          <p class="hint">Multiplier applied to cost rates.</p>
+        </div>
+
+        <div class="field">
+          <label for="quality">Spec / finish level</label>
+          <select id="quality">
+            <option value="0.95">Budget (0.95)</option>
+            <option value="1.00" selected>Standard (1.00)</option>
+            <option value="1.12">Premium (1.12)</option>
+          </select>
+          <p class="hint">Affects build cost and programme risk.</p>
+        </div>
+
+        <div class="field">
+          <label for="procurement">Procurement</label>
+          <select id="procurement">
+            <option value="traditional" selected>Traditional</option>
+            <option value="design_build">Design & Build</option>
+          </select>
+          <p class="hint">Affects fees + contingency.</p>
+        </div>
+      </div>
+
+      <hr />
+
+      <div class="grid2">
+        <div class="field">
+          <label for="existingArea">Existing internal area (m²)</label>
+          <input id="existingArea" type="number" min="0" step="1" value="90" />
+        </div>
+
+        <div class="field">
+          <label for="newArea">New/added area (m²)</label>
+          <input id="newArea" type="number" min="1" step="1" value="25" />
+        </div>
+
+        <div class="field">
+          <label for="storeys">Storeys affected / added</label>
+          <input id="storeys" type="number" min="1" max="50" step="1" value="1" />
+        </div>
+
+        <div class="field">
+          <label for="siteArea">Site area (m²)</label>
+          <input id="siteArea" type="number" min="1" step="1" value="180" />
+          <p class="hint">Used for site coverage + density checks.</p>
+        </div>
+      </div>
+
+      <div class="btnRow">
+        <button class="btn primary" id="btnCalculate">Generate Design</button>
+        <button class="btn" id="btnReset">Reset</button>
+      </div>
+
+      <p class="note" id="assumptionNote"></p>
+    </section>
+
+    <section class="card">
+      <div class="row">
+        <h2>Design Results</h2>
+        <div class="pill" id="statusPill">Calculated</div>
+      </div>
+
+      <div class="kpiGrid">
+        <div class="kpi">
+          <div class="k">Estimated build cost</div>
+          <div class="v" id="kpiBuildCost">—</div>
+          <div class="m" id="kpiBuildRate">—</div>
+        </div>
+
+        <div class="kpi">
+          <div class="k">Professional fees</div>
+          <div class="v" id="kpiFees">—</div>
+          <div class="m" id="kpiFeeRate">—</div>
+        </div>
+
+        <div class="kpi">
+          <div class="k">Contingency</div>
+          <div class="v" id="kpiContingency">—</div>
+          <div class="m" id="kpiContRate">—</div>
+        </div>
+
+        <div class="kpi">
+          <div class="k">Overall Total Cost Estimate</div>
+          <div class="v" id="kpiTotal">—</div>
+          <div class="m" id="kpiTotalRange">—</div>
+        </div>
+      </div>
+
+      <hr />
+
+      <div class="grid2">
+        <div class="panel">
+          <h3>Design metrics</h3>
+          <div class="metric"><span>New total area</span><strong id="mTotalArea">—</strong></div>
+          <div class="metric"><span>Site coverage</span><strong id="mCoverage">—</strong></div>
+          <div class="metric"><span>FAR (Floor Area Ratio)</span><strong id="mFAR">—</strong></div>
+          <div class="metric"><span>Density proxy</span><strong id="mDensity">—</strong></div>
+          <p class="hint">These are simple planning/design indicators (not legal determinations).</p>
+        </div>
+
+        <div class="panel">
+          <h3>Programme estimate</h3>
+          <div class="metric"><span>Design & approvals</span><strong id="pDesign">—</strong></div>
+          <div class="metric"><span>Construction</span><strong id="pBuild">—</strong></div>
+          <div class="metric"><span>Risk notes</span><strong id="pRisk">—</strong></div>
+          <p class="hint">Programme varies heavily by site constraints and procurement.</p>
+        </div>
+      </div>
+
+      <hr />
+
+      <div class="panel">
+        <h3>Breakdown</h3>
+        <div class="breakGrid">
+          <div class="break">
+            <div class="k">Base build cost</div>
+            <div class="v" id="bBase">—</div>
+          </div>
+          <div class="break">
+            <div class="k">Location/spec factor</div>
+            <div class="v" id="bFactors">—</div>
+          </div>
+          <div class="break">
+            <div class="k">Fees (architecture/eng/etc.)</div>
+            <div class="v" id="bFees">—</div>
+          </div>
+          <div class="break">
+            <div class="k">Contingency</div>
+            <div class="v" id="bCont">—</div>
+          </div>
+        </div>
+
+        <details class="details">
+          <summary>Show calculation details</summary>
+          <pre id="debug"></pre>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <button class="btn primary" id="btnExport">Export Design Report</button>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
